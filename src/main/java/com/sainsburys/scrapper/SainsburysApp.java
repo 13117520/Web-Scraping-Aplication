@@ -20,24 +20,25 @@ import org.jsoup.nodes.Element;
 
 public class SainsburysApp {
 
-	static double totalPrice = 0;
-	static List<Product> products = new ArrayList<Product>();
-	static Product emp = null;
-	static String jsonInString = "";
-	String output = "";
 	static String baseLink = "https://jsainsburyplc.github.io/serverside-test/site/www.sainsburys.co.uk/";
+	static List<Product> products = new ArrayList<Product>();
+	static String jsonInString = "";
+	static double totalPrice = 0;
+	static Product sainsburyPorduct = null;
+	String output = "";
 
 	public static void main(String[] args) throws IOException {
 
-		System.out.println("{" + '\n' + "\"results : \" " + transformToJSON(getProducts()) + "" + '\n' + " \"total: \" "
+		System.out.println("{" + '\n' + "\"results : \" " 
+				+ transformToJSON(getProducts()) + "" + '\n' + " \"total: \" "
 				+ getTotalPrice(products) + '\n' + "}");
 
 	}
 
+	//This method scrape information from Sainsburys website and create an ArrayList of products 
 	public static List<Product> getProducts() throws IOException {
 
-		final Document document = Jsoup
-				.connect(baseLink + "webapp/wcs/stores/servlet/gb/groceries/berries-cherries-currants6039.html").get();
+		final Document document = Jsoup.connect(baseLink + "webapp/wcs/stores/servlet/gb/groceries/berries-cherries-currants6039.html").get();
 
 		for (Element row : document.select("ul.productLister li")) {
 
@@ -45,10 +46,11 @@ public class SainsburysApp {
 
 			final String price = row.select(".pricing").text();
 
+			// Create new product and sets title, price, kcal and description
 			if (!title.equals("") && !price.equals("")) {
-				emp = new Product();
-				emp.setTitle(title);
-				emp.setUnit_price(price.substring(1, 5));
+				sainsburyPorduct = new Product();
+				sainsburyPorduct.setTitle(title);
+				sainsburyPorduct.setUnit_price(price.substring(1, 5));
 
 				final String link = row.select("a[href]").attr("href");
 
@@ -62,7 +64,7 @@ public class SainsburysApp {
 
 						if (kcal_per_100g != null) {
 
-							emp.setKcal_per_100g(kcal_per_100g);
+							sainsburyPorduct.setKcal_per_100g(kcal_per_100g);
 
 						} else {
 
@@ -74,12 +76,12 @@ public class SainsburysApp {
 
 						final String description = information.selectFirst(".productText").text();
 
-						emp.setDescription(description);
+						sainsburyPorduct.setDescription(description);
 
 					}
 
 				}
-				products.add(emp);
+				products.add(sainsburyPorduct);
 			} else {
 			}
 
@@ -90,6 +92,7 @@ public class SainsburysApp {
 
 	}
 
+	// This method transforms ArrayList into JSON String 
 	public static String transformToJSON(List<Product> products) {
 
 		ObjectMapper mapper = new ObjectMapper();
@@ -107,6 +110,7 @@ public class SainsburysApp {
 		return jsonInString;
 	}
 
+	// This method get returns total price of all products
 	public static double getTotalPrice(List<Product> products) {
 
 		for (int i = 0; i < products.size(); i++) {

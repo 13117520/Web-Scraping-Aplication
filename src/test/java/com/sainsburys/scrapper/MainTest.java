@@ -9,6 +9,7 @@ import org.junit.Test;
 
 public class MainTest {
 
+	// Checks the total price of all products
 	@Test
 	public void testTotalAmount() throws IOException {
 
@@ -20,7 +21,7 @@ public class MainTest {
 		assertEquals(total, valueue, 0);
 	}
 
-	
+	// Tests the output after converting List Array into JSON String
 	@Test
 	public void testJSONConverter() throws IOException {
 
